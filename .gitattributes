@@ -1,0 +1,12 @@
+# Force C# to be recognized
+*.cs linguist-language=C#
+
+# Optionally classify XAML too if you're using it
+*.xaml linguist-language=XML
+
+# Tell GitHub to ignore CSS for language detection
+*.css linguist-detectable=false
+
+# You can exclude other frontend assets if needed
+*.scss linguist-detectable=false
+*.js linguist-detectable=false
