@@ -1,0 +1,39 @@
+﻿@page "/ticker-grid"
+@using BlazorBootstrap
+@using MauiApp1.Services
+@using MauiApp1.Models
+@using System.ComponentModel.DataAnnotations
+
+@inject ITickerService service
+
+<h3>TickerGrid</h3>
+  <Grid @ref="tickerDataGridRef"
+      TItem="TickerModel"
+      Class="table table-hover table-bordered table-striped"
+          DataProvider="TickerDataProvider"
+        AllowPaging="true"
+        PageSize="10"
+      AllowSorting="true"
+      Responsive="true">
+
+
+        <GridColumn TItem="TickerModel" HeaderText="Index" SortString="Index" SortKeySelector="item => item.Index" PropertyName="Index">
+            @context.Index
+        </GridColumn>
+    <GridColumn TItem="TickerModel" HeaderText="Date" SortString="TradeDate" SortKeySelector="item => item.TradeDate" PropertyName="TradeDate">
+        @context.TradeDate
+    </GridColumn>
+      
+
+</Grid>
+@code {
+    private Grid<TickerModel> tickerDataGridRef = default!;
+    private IEnumerable<TickerModel>? list;
+
+    private async Task<GridDataProviderResult<TickerModel>> TickerDataProvider(GridDataProviderRequest<TickerModel> request)
+    {
+        list = await service.GetPage(request.PageNumber, request.PageSize);
+        int total = await service.GetTotalRecords();
+        return (new GridDataProviderResult<TickerModel> { Data = list, TotalCount = total });
+    }
+}

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MauiApp1.Services;
+using Microsoft.Extensions.Logging;
 
 namespace MauiApp1
 {
@@ -15,10 +16,11 @@ namespace MauiApp1
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddScoped<ITickerService, TickerService>(); // Fixed syntax for registering services
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
