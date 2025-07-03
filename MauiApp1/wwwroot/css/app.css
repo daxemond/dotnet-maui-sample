@@ -86,3 +86,8 @@ h1:focus {
         padding-left: env(safe-area-inset-left);
     }
 }
+
+.button-holder {
+    padding: 10px;
+    text-align: right;
+}

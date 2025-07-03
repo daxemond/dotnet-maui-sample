@@ -10,7 +10,9 @@ namespace MauiApp1.Services
 {
     internal interface ITickerService
     {
-        Task<IEnumerable<TickerModel>> GetPage(int page, int pageSize);
-        Task<int> GetTotalRecords();
+        Task<IEnumerable<TickerModel>> GetPage(TickerSearchModel? search, int page, int pageSize);
+        Task<int> GetTotalRecords(TickerSearchModel? search);
+
+        Task<IEnumerable<AutoCompleteModel>> GetAllIndexes();
     }
 }

@@ -2,6 +2,7 @@
     using Android.Content;
     using Android.Net.Wifi.Rtt;
     using Android.Renderscripts;
+    using static Android.Icu.Util.LocaleData;
 #endif
 using BlazorBootstrap;
 using MauiApp1.Models;
@@ -12,6 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+
 
 namespace MauiApp1.Services
 {
@@ -920,10 +923,15 @@ namespace MauiApp1.Services
     }
 ]";
 
-        public Task<IEnumerable<TickerModel>> GetPage(int page, int pageSize)
+        public Task<IEnumerable<TickerModel>> GetPage(TickerSearchModel? search, int page, int pageSize)
         {
             // Parse the JSON data into a list of TickerModel
             var list = JArray.Parse(_data).ToObject<List<TickerModel>>() ?? new List<TickerModel>();
+
+            if (search?.Index != null)
+            {
+                return Task.FromResult(list.Where(x => x.Index == search.Index).AsEnumerable());
+            }
 
             // Perform pagination
             var records = list.Skip((page - 1) * pageSize).Take(pageSize);
@@ -932,10 +940,23 @@ namespace MauiApp1.Services
             return Task.FromResult(records.AsEnumerable());
         }
 
-        public Task<int> GetTotalRecords()
+        public Task<int> GetTotalRecords(TickerSearchModel? search)
         {
             var list = JArray.Parse(_data).ToObject<List<TickerModel>>() ?? new List<TickerModel>();
+            if (search?.Index != null)
+            {
+                return Task.FromResult(list.Where(x => x.Index == search.Index).ToList().Count);
+            }
             return Task.FromResult(list.Count);
+        }
+
+        public Task<IEnumerable<AutoCompleteModel>> GetAllIndexes()
+        {
+            List<TickerModel> list = JArray.Parse(_data).ToObject<List<TickerModel>>() ?? new List<TickerModel>();
+            var groups = list.Select(x => x.Index).GroupBy(x => x).Select(x => new AutoCompleteModel() { Value = x.Key, Name = x.Key }).ToList();
+
+            // Perform pagination
+            return Task.FromResult(groups.AsEnumerable());
         }
     }
 }

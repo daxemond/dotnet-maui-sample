@@ -21,11 +21,14 @@ else
                 <EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
                     <DataAnnotationsValidator />
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-2 col-form-label">Index: </label>
-                        <div class="col-md-10">
-                            <InputText class="form-control" @bind-Value="searchForm.Index" Placeholder="Enter Index" />
-                        </div>
+                    <div class="mb-3 mt-3">
+                        <label for="user">Select Index:</label>
+                        <AutoComplete Class="form-control" @bind-Value="selectedIndex"
+                                      TItem="AutoCompleteModel"
+                                      DataProvider="IndexDataProvider"
+                                      PropertyName="Name"
+                                      Placeholder="Search Index..."
+                                      OnChanged="(AutoCompleteModel indx) => OnIndexAutoCompleteChanged(indx)" required />
                     </div>
 
                     <div class="row">
@@ -80,12 +83,14 @@ else
 
     private Grid<TickerModel> tickerDataGridRef = default!;
     private IEnumerable<TickerModel>? list = null;
+    private IEnumerable<AutoCompleteModel> indexes = null!;
+    private string selectedIndex = string.Empty;
     private int pagesize = 12;
 
     protected override async Task OnInitializedAsync()
     {
         editContext = new EditContext(searchForm);
-        list = await service.GetPage(1, pagesize);
+        list = await service.GetPage(null,1, pagesize);
     }
 
     private void ResetForm()
@@ -108,8 +113,25 @@ else
 
     private async Task<GridDataProviderResult<TickerModel>> TickerDataProvider(GridDataProviderRequest<TickerModel> request)
     {
-        list = await service.GetPage(request.PageNumber, request.PageSize);
-        int total = await service.GetTotalRecords();
+        list = await service.GetPage(searchForm,request.PageNumber, request.PageSize);
+        int total = await service.GetTotalRecords(searchForm);
         return (new GridDataProviderResult<TickerModel> { Data = list, TotalCount = total });
+    }
+
+    private async Task<AutoCompleteDataProviderResult<AutoCompleteModel>> IndexDataProvider(AutoCompleteDataProviderRequest<AutoCompleteModel> request)
+    {
+        if (indexes is null) // pull customers only one time for client-side autocomplete
+            indexes = await service.GetAllIndexes();
+
+        return await Task.FromResult(request.ApplyTo(indexes.OrderBy(x => x.Name)));
+    }
+
+    private void OnIndexAutoCompleteChanged(AutoCompleteModel indx)
+    {
+        if (indx != null)
+        {
+            searchForm.Index = indx.Value;
+        }
+
     }
 }
