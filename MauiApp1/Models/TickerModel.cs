@@ -17,5 +17,15 @@ namespace MauiApp1.Models
         public required float Low { get; set; }
         public required float Volume { get; set; } = 0;
 
+        public string LocalDateTime
+        {
+            get
+            {
+                var localTime = TradeDate.ToLocalTime();
+                string formatted = localTime.ToString("yyyy-MM-dd HH:mm:ss");
+                return formatted;
+            }
+        }
+
     }
 }

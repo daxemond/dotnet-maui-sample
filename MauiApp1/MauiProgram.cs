@@ -16,6 +16,7 @@ namespace MauiApp1
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddBlazorBootstrap();
             builder.Services.AddScoped<ITickerService, TickerService>(); // Fixed syntax for registering services
 
 #if DEBUG
