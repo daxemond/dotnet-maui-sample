@@ -90,7 +90,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         editContext = new EditContext(searchForm);
-        list = await service.GetPage(null,1, pagesize);
+        list = await service.GetPage(null,null,1, pagesize);
     }
 
     private void ResetForm()
@@ -113,7 +113,7 @@ else
 
     private async Task<GridDataProviderResult<TickerModel>> TickerDataProvider(GridDataProviderRequest<TickerModel> request)
     {
-        list = await service.GetPage(searchForm,request.PageNumber, request.PageSize);
+        list = await service.GetPage(searchForm,request.Sorting, request.PageNumber, request.PageSize);
         int total = await service.GetTotalRecords(searchForm);
         return (new GridDataProviderResult<TickerModel> { Data = list, TotalCount = total });
     }

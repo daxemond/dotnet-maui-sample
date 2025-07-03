@@ -923,14 +923,21 @@ namespace MauiApp1.Services
     }
 ]";
 
-        public Task<IEnumerable<TickerModel>> GetPage(TickerSearchModel? search, int page, int pageSize)
+        public Task<IEnumerable<TickerModel>> GetPage(TickerSearchModel? search, IEnumerable<SortingItem<TickerModel>> sortings, int page, int pageSize)
         {
             // Parse the JSON data into a list of TickerModel
             var list = JArray.Parse(_data).ToObject<List<TickerModel>>() ?? new List<TickerModel>();
 
             if (search?.Index != null)
             {
-                return Task.FromResult(list.Where(x => x.Index == search.Index).AsEnumerable());
+                list = list.Where(x => x.Index == search.Index).ToList();
+            }
+
+            if (sortings != null && sortings.Count() > 0)
+            {
+                var type = typeof(TickerModel);
+                var sortproperty = type.GetProperty(sortings.First().SortString);
+                list = list.GetSortedList<TickerModel>(sortings.First().SortString, sortings.First().SortDirection.ToString());
             }
 
             // Perform pagination
