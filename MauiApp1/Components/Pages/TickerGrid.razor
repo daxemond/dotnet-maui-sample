@@ -93,10 +93,11 @@ else
         list = await service.GetPage(null,null,1, pagesize);
     }
 
-    private void ResetForm()
+    private async Task ResetForm()
     {
         searchForm = new();
         editContext = new EditContext(searchForm);
+        await tickerDataGridRef.RefreshDataAsync();
     }
 
     public async Task HandleOnValidSubmit()
